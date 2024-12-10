@@ -6,6 +6,7 @@ import java.io.*;
 import java.util.Properties;
 
 public class RoadMapWindow extends JFrame {
+
     private final Image backgroundImage;
 
     // Declare buttons as instance variables
@@ -59,7 +60,11 @@ public class RoadMapWindow extends JFrame {
         // Add functionality to Game 1 button
         game1Button.addActionListener(e -> {
             if (!game1Button.isLocked()) {
+                StartScreen startScreen = new StartScreen(this, "game1");
+                startScreen.setVisible(true);
                 new Game1(this).setVisible(true); // Pass the current `RoadMapWindow` instance to `Game1`
+
+
             } else {
                 JOptionPane.showMessageDialog(this, "Game 1 is locked! Complete the required steps to unlock.");
             }
@@ -68,8 +73,12 @@ public class RoadMapWindow extends JFrame {
         // Add functionality to Game 1 button
         game2Button.addActionListener(e -> {
             if (!game2Button.isLocked()) {
+                StartScreen startScreen = new StartScreen(this, "game2");
+                startScreen.setVisible(true);
                 Game2 game2Instance = new Game2(this); // Create an instance of Game2
                 game2Instance.setVisible(true);
+
+
                 if (game2Instance != null) { // Check if the Game2 instance is not null
                     game2Instance.dispose(); // Dispose the Game2 instance when done
                 }
@@ -77,6 +86,31 @@ public class RoadMapWindow extends JFrame {
                 JOptionPane.showMessageDialog(this, "Game 2 is locked! Complete the required steps to unlock.");
             }
 
+        });
+
+        // Add functionality to Game 1 button
+        game3Button.addActionListener(e -> {
+            if (!game3Button.isLocked()) {
+                StartScreen startScreen = new StartScreen(this, "game3");
+                startScreen.setVisible(true);
+                JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(game3Button);
+                new Game3(parentFrame, this);
+            }
+        });
+
+
+        // Add functionality to Game 1 button
+        game4Button.addActionListener(e -> {
+            if (!game4Button.isLocked()) {
+                StartScreen startScreen = new StartScreen(this, "game4");
+                startScreen.setVisible(true);
+                //dito lagay game4
+                //new Game4(this).setVisible(true);
+
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Game 4 is locked! Complete the required steps to unlock.");
+            }
         });
 
         // Add hover listeners for locked games
@@ -172,6 +206,15 @@ public class RoadMapWindow extends JFrame {
         game2Button.setForeground(Color.RED); // Change text color to red
         game2Button.setEnabled(false); // Optionally disable Game 1 button
         JOptionPane.showMessageDialog(this, "Game 3 Unlocked!"); // Notify the player
+
+    }
+
+    public void unlockGame4() {
+        game4Button.setLocked(false); // Unlock Game 2
+        game3Button.setText("Completed"); // Update Game 1 button text
+        game3Button.setForeground(Color.RED); // Change text color to red
+        game3Button.setEnabled(false); // Optionally disable Game 1 button
+        JOptionPane.showMessageDialog(this, "Game 4 Unlocked!"); // Notify the player
 
     }
 

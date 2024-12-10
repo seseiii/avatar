@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,8 +10,21 @@ public class MissionFailedDialog {
 
     // Constructor with correct name
     public MissionFailedDialog(JFrame parentFrame, Object welcomeWindow) {
-        this.parentFrame = parentFrame;
+
+        if (parentFrame == null) {
+            this.parentFrame = createProxyFrame();
+        } else {
+            this.parentFrame = parentFrame;
+        }
         this.welcomeWindow = welcomeWindow;
+    }
+
+    private JFrame createProxyFrame() {
+        JFrame proxyFrame = new JFrame();
+        proxyFrame.setUndecorated(true);
+        proxyFrame.setSize(0, 0); // Invisible size
+        proxyFrame.setLocationRelativeTo(null);
+        return proxyFrame;
     }
 
     public void showMissionFailed() {
@@ -59,15 +73,15 @@ public class MissionFailedDialog {
         backButton.addActionListener(e -> {
             missionFailedDialog.dispose();  // Close the dialog
 
-            if (welcomeWindow != null) {
-                // Ensure welcomeWindow is a JFrame or something that supports setVisible
-                if (welcomeWindow instanceof JFrame) {
-                    ((JFrame) welcomeWindow).setVisible(true);  // Make the welcomeWindow window visible
-                } else {
-                    System.out.println("welcomeWindow is not of type JFrame.");
-                }
-            }
+
+            //failedMessage();
+
+//                // Create a new instance of WelcomeWindow and display it
+                WelcomeWindow welcomeWindow = new WelcomeWindow(); // Replace this with your actual constructor
+                welcomeWindow.setVisible(true);
+
         });
+
 
         missionFailedLabel.setLayout(null);
         missionFailedDialog.setLocationRelativeTo(null);
@@ -87,4 +101,86 @@ public class MissionFailedDialog {
             }
         });
     }
+
+    private void failedMessage() {
+        // Load the background image
+        ImageIcon icon = new ImageIcon("src/img/failedMessage.png");
+        Image backgroundImage = icon.getImage();
+
+        // Create a frame and set properties
+        JFrame frame = new JFrame();
+        frame.setSize(Toolkit.getDefaultToolkit().getScreenSize()); // Set to full-screen size
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false); // Disable resizing
+        frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // Set the frame to full-screen mode
+
+        // Create a custom panel for the background
+        JPanel backgroundPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this); // Draw the background image
+            }
+        };
+        backgroundPanel.setLayout(null); // Use null layout for absolute positioning
+        frame.setContentPane(backgroundPanel); // Set as content pane for the frame
+
+        // Add Start Button
+        JButton startButton = new JButton("Ok");
+        startButton.setFont(new Font("Arial", Font.BOLD, 18));
+        int buttonWidth = 150;
+        int buttonHeight = 40;
+
+        // Set the initial position and size of the button at the bottom-right corner of the container
+        startButton.setBounds(backgroundPanel.getWidth() - buttonWidth - 80, backgroundPanel.getHeight() - buttonHeight - 80, buttonWidth, buttonHeight);
+
+        // Style the button with blue color
+        startButton.setBackground(new Color(255, 0, 0)); // Light blue color
+        startButton.setOpaque(true);
+        startButton.setBorderPainted(false); // Remove the border
+
+        // Hover effect for dark blue
+        startButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                startButton.setBackground(new Color(255, 0, 0)); // Change to red on hover
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                startButton.setBackground(new Color(70, 130, 180)); // Back to darker blue
+            }
+
+        });
+
+        backgroundPanel.add(startButton);
+
+        // Action Listener for Start Button
+        startButton.addActionListener(e -> {
+            System.exit(0); // Exit the application
+            frame.dispose(); // Close the frame
+        });
+
+        // Add a component listener to handle resizing
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                // Update button position at bottom-right corner when window is resized
+                int frameWidth = frame.getWidth();
+                int frameHeight = frame.getHeight();
+
+                int buttonX = frameWidth - buttonWidth - 80; // Move further left
+                int buttonY = frameHeight - buttonHeight - 80; // Raise button from the bottom
+                startButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
+
+                // Repaint the background to fit the new size
+                backgroundPanel.repaint();
+            }
+        });
+
+        frame.setVisible(true); // Make the frame visible
+    }
+
+
 }

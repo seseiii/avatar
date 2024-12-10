@@ -16,10 +16,6 @@ public class Game1 extends JFrame {
     public Game1(RoadMapWindow roadMapWindow) {
         this.roadMapWindow = roadMapWindow;
 
-        // Show Start Screen first
-        StartScreen startScreen = new StartScreen(this); // Pass this Game1 instance to StartScreen
-        startScreen.setVisible(true);
-
         // Configure the main game frame
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full-screen mode
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -28,94 +24,9 @@ public class Game1 extends JFrame {
         setVisible(false); // Initially hidden until the StartScreen closes
     }
 
-
-    static class StartScreen extends JDialog {
-        public StartScreen(Game1 parent) {
-            super(parent, true); // Make it modal to block interaction with the Game1 frame
-
-            // Remove title bar
-            setUndecorated(true);
-
-            // Add custom border to mimic window frame without title bar
-            getRootPane().setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
-
-            setSize(400, 380); // Updated size
-            setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-            setLocationRelativeTo(null); // Center the dialog
-            setResizable(false); // Disable resizing
-            setLayout(null);
-
-            // Custom panel for background and text rendering
-            JPanel backgroundPanel = new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    // Do not call super.paintComponent(g); to prevent filling the background
-                    Graphics2D g2 = (Graphics2D) g;
-
-                    // Enable high-quality rendering for images and text
-                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-                    g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-                    g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-
-                    // Draw the main image without white background
-                    try {
-                        BufferedImage image = ImageIO.read(new File("src/img/watermission.png"));
-                        Image scaledImage = image.getScaledInstance(380, 310, Image.SCALE_SMOOTH);
-
-                        int imageX = 10;
-                        int imageY = 10;
-
-                        // Draw the image
-                        g2.drawImage(scaledImage, imageX, imageY, null);
-
-                    } catch (IOException e) {
-                        g2.setColor(Color.RED);
-                        g2.drawString("Failed to load background image", 10, 20);
-                    }
-                }
-            };
-            backgroundPanel.setBounds(0, 0, 400, 380);
-            backgroundPanel.setLayout(null);
-            backgroundPanel.setOpaque(false); // Make the panel transparent
-            add(backgroundPanel);
-
-            // Add Start Button
-            JButton startButton = new JButton("Start");
-            startButton.setFont(new Font("Arial", Font.BOLD, 14));
-            startButton.setFocusPainted(false);
-            startButton.setBackground(new Color(227, 141, 60));
-            startButton.setForeground(Color.WHITE);
-            startButton.setBounds((400 - 100) / 2, 330, 100, 40);
-
-            startButton.setBorderPainted(false); // Remove button border
-            startButton.setOpaque(true);
-
-            // Add hover effect to the button
-            Color originalColor = startButton.getBackground();
-            Color hoverColor = originalColor.darker();
-
-            startButton.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    startButton.setBackground(hoverColor);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    startButton.setBackground(originalColor);
-                }
-            });
-
-            startButton.addActionListener(e -> {
-                dispose(); // Close the StartScreen dialog
-                SwingUtilities.invokeLater(() -> parent.setVisible(true)); // Make the Game1 frame visible after disposing
-            });
-            backgroundPanel.add(startButton);
-        }
-    }
-
     // Main Game Panel
     class GamePanel extends JPanel implements ActionListener {
+
         private final int TILE_SIZE = 20;
         private final int AANG_SIZE = TILE_SIZE * 4;
         private final int BOAT_SIZE = TILE_SIZE * 3;
