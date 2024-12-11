@@ -56,8 +56,18 @@ public class Game2 extends JFrame {
     JButton card1Selected;
     JButton card2Selected;
 
+
     public Game2(RoadMapWindow roadMapWindow) {
         this.roadMapWindow = roadMapWindow;
+
+        new StartScreen(
+                this,
+                "src/img/earthmission.png",
+                new Color(137, 95, 37),
+                null
+        ).setVisible(true);
+
+
         setupCards();
         shuffleCards();
 
@@ -144,6 +154,9 @@ public class Game2 extends JFrame {
 
                                         MissionFailedDialog dialog = new MissionFailedDialog(Game2.this, roadMapWindow);
                                         dialog.showMissionFailed();
+                                        frame.dispose();
+                                        roadMapWindow.dispose();
+                                        Game2.this.setVisible(false);
                                     }
 
                                 }
@@ -160,7 +173,7 @@ public class Game2 extends JFrame {
                                     // Call the MissionCompleteDialog class and pass necessary parameters
                                     MissionCompleteDialog missionDialog = new MissionCompleteDialog(Game2.this, roadMapWindow);
                                     missionDialog.showMissionComplete();
-                                    dispose();
+                                    frame.dispose();
                                     Game2.this.setVisible(false); // Hide the current Game2 window
                                     roadMapWindow.unlockGame3();
                                 });

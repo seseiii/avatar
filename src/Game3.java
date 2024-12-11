@@ -6,9 +6,9 @@ import java.util.Random;
 
 public class Game3 extends JPanel implements ActionListener, KeyListener {
 
-    private final JFrame parentFrame;
-    private final RoadMapWindow roadMapWindow;
     private static final long serialVersionUID = 1L;
+    private final RoadMapWindow roadMapWindow;
+    private Image energyIcon;
 
     class Block {
         int x;
@@ -125,16 +125,12 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
     int lives = 3;
     boolean gameOver = false;
 
-    public Game3(JFrame parentFrame, RoadMapWindow roadMapWindow) {
-        this.parentFrame = parentFrame;
+    public Game3(RoadMapWindow roadMapWindow) {
         this.roadMapWindow = roadMapWindow;
-
         JFrame frame = new JFrame("Fire Element Challenge");
-        //Game3 gamePanel = new Game3(frame, roadMapWindow);
-        //frame.add(gamePanel);
 
         goldCoinImage = new ImageIcon("src/img/powerFood.png").getImage();
-        backgroundImage = new ImageIcon("src/img/firebg.png").getImage();
+        backgroundImage = new ImageIcon("src/img/bgfire.png").getImage();
 
         setLayout(new BorderLayout());
         addKeyListener(this);
@@ -158,60 +154,80 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         avatarLeftImage = new ImageIcon(getClass().getResource("/img/left.png")).getImage();
         avatarRightImage = new ImageIcon(getClass().getResource("/img/right.png")).getImage();
 
-        loadMap();
+        new StartScreen(
+                frame,
+                "src/img/fireMission.png",
+                new Color(124, 15, 15),
+                null
+        ).setVisible(true);
+
+        startGame();
+        /*loadMap();
         for (Block ghost : ghosts) {
             char newDirection = directions[random.nextInt(4)];
             ghost.updateDirection(newDirection);
         }
         gameLoop = new Timer(60, this); // 20fps
-        gameLoop.start();
+        gameLoop.start();*/
         frame.setVisible(true);
     }
 
+    private void startGame() {
+        loadMap();
+        resetPositions();
+        score = 0;
+        gameOver = false;
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
+        gameLoop = new Timer(60, e -> {
+            move();
+            repaint();
+            if (gameOver) {
+                gameLoop.stop();
+            }
+        });
+        gameLoop.setRepeats(true);
+        gameLoop.start();
+    }
+
     public void loadMap() {
-        walls = new HashSet<Block>();
-        foods = new HashSet<Block>();
-        ghosts = new HashSet<Block>();
+        walls = new HashSet<>();
+        foods = new HashSet<>();
+        ghosts = new HashSet<>();
 
         for (int r = 0; r < rowCount; r++) {
             for (int c = 0; c < columnCount; c++) {
-                String row = tileMap[r];
-                char tileMapChar = row.charAt(c);
+                char tileMapChar = tileMap[r].charAt(c);
+                int x = c * tileSize;
+                int y = r * tileSize;
 
-                int x = c*tileSize;
-                int y = r*tileSize;
-
-                if (tileMapChar == 'X') { //block wall
-                    Block wall = new Block(wallImage, x, y, tileSize, tileSize);
-                    walls.add(wall);
-                }
-                else if (tileMapChar == 'b') { //blue ghost
-                    Block ghost = new Block(lordOzaiImage, x, y, tileSize, tileSize);
-                    ghosts.add(ghost);
-                }
-                else if (tileMapChar == 'o') { //orange ghost
-                    Block ghost = new Block(zukoImage, x, y, tileSize, tileSize);
-                    ghosts.add(ghost);
-                }
-                else if (tileMapChar == 'p') { //pink ghost
-                    Block ghost = new Block(princessAzulaImage, x, y, tileSize, tileSize);
-                    ghosts.add(ghost);
-                }
-                else if (tileMapChar == 'r') { //red ghost
-                    Block ghost = new Block(kuviraImage, x, y, tileSize, tileSize);
-                    ghosts.add(ghost);
-                }
-                else if (tileMapChar == 'P') { //pacman
-                    pacman = new Block(avatarRightImage, x, y, tileSize, tileSize);
-                }
-                else if (tileMapChar == ' ') { //food
-                    Block food = new Block(goldCoinImage, x + 14, y + 14, 6, 6);
-                    foods.add(food);
+                switch (tileMapChar) {
+                    case 'X':
+                        walls.add(new Block(wallImage, x, y, tileSize, tileSize));
+                        break;
+                    case 'b':
+                        ghosts.add(new Block(lordOzaiImage, x, y, tileSize, tileSize));
+                        break;
+                    case 'o':
+                        ghosts.add(new Block(zukoImage, x, y, tileSize, tileSize));
+                        break;
+                    case 'p':
+                        ghosts.add(new Block(princessAzulaImage, x, y, tileSize, tileSize));
+                        break;
+                    case 'r':
+                        ghosts.add(new Block(kuviraImage, x, y, tileSize, tileSize));
+                        break;
+                    case 'P':
+                        pacman = new Block(avatarRightImage, x, y, tileSize, tileSize);
+                        break;
+                    case ' ':
+                        foods.add(new Block(goldCoinImage, x + 14, y + 14, 6, 6));
+                        break;
                 }
             }
         }
     }
-
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -219,6 +235,10 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
     }
 
     public void draw(Graphics g) {
+        for (int i = 0; i < GameOverDialog.getEnergy(); i++) {
+            g.drawImage(energyIcon, 10 + (i * 40), 40, 30, 30, this);
+        }
+
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
         int mapWidth = columnCount * tileSize;
@@ -267,13 +287,8 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         for (Block ghost : ghosts) {
             if (collision(ghost, pacman)) {
                 gameOver = true;
-                handleGameOver("");
-                if (lives == 0) {
-                    MissionFailedDialog dialog = new MissionFailedDialog(parentFrame, roadMapWindow);
-                    dialog.showMissionFailed();
-                    return;
-                }
-                resetPositions();
+                GameOverDialog.handleGameOver(SwingUtilities.getWindowAncestor(this), this::startGame);
+                return;
             }
 
             if (ghost.y == tileSize * 9 && ghost.direction != 'U' && ghost.direction != 'D') {
@@ -290,27 +305,30 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
             }
         }
 
-        for (Block food : foods) {
-            if (collision(food, pacman)) {
-                foods.remove(food);
-                score += 2;
-
-                if (score == 50) {
-                    gameLoop.stop();
-
-                    SwingUtilities.invokeLater(() -> {
-                        // Show the Mission Complete dialog on top of the Game3 panel\
-                        MissionCompleteDialog missionDialog = new MissionCompleteDialog(parentFrame, roadMapWindow);
-                        missionDialog.showMissionComplete();
-                        Game3.this.setVisible(false); // Hide the current Game2 window
-                        roadMapWindow.unlockGame4();
-                    });
-
-                }
-                break;
+        foods.removeIf(food -> {
+            if (collision(pacman, food)) {
+                score++;
+                return true;
             }
+            return false;
+        });
+        if (score > 50 && !gameOver) {
+            gameOver = true;
+
+
+            MissionCompleteDialog missionDialog = new MissionCompleteDialog(null, roadMapWindow);
+            missionDialog.showMissionComplete();
+            JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+            if (frame != null) {
+                frame.dispose();
+            }
+            this.setVisible(false);
+            roadMapWindow.unlockGame4();
+
+
         }
     }
+
     public boolean collision(Block a, Block b) {
         return  a.x < b.x + b.width &&
                 a.x + a.width > b.x &&
@@ -324,8 +342,7 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         pacman.velocityY = 0;
         for (Block ghost : ghosts) {
             ghost.reset();
-            char newDirection = directions[random.nextInt(4)];
-            ghost.updateDirection(newDirection);
+            ghost.updateDirection(directions[random.nextInt(4)]);
         }
     }
 
@@ -486,9 +503,9 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
             paintImmediately(0, 0, getWidth(), getHeight());
 
             // Show failed image and transition to WelcomeWindow
-            MissionFailedDialog dialog = new MissionFailedDialog(parentFrame, roadMapWindow);
+            /*MissionFailedDialog dialog = new MissionFailedDialog(parentFrame, roadMapWindow);
             dialog.showMissionFailed();
-            Game3.this.setVisible(false);
+            Game3.this.setVisible(false);*/
         }
     }
 
@@ -502,19 +519,4 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
             }
         });
     }
-
-    /*class BackgroundPanel extends JPanel {
-        private Image backgroundImage;
-
-        public BackgroundPanel() {
-            backgroundImage = new ImageIcon("src/bgfire.png").getImage();
-            System.out.println("Backgroud panel test");
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            super.paintComponent(g);
-            g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
-        }
-    }*/
 }

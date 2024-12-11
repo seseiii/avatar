@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -74,11 +73,11 @@ public class MissionFailedDialog {
             missionFailedDialog.dispose();  // Close the dialog
 
 
-            //failedMessage();
+            failedMessage();
 
 //                // Create a new instance of WelcomeWindow and display it
-                WelcomeWindow welcomeWindow = new WelcomeWindow(); // Replace this with your actual constructor
-                welcomeWindow.setVisible(true);
+//                WelcomeWindow welcomeWindow = new WelcomeWindow(); // Replace this with your actual constructor
+//                welcomeWindow.setVisible(true);
 
         });
 

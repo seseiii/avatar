@@ -8,8 +8,20 @@ public class MissionCompleteDialog {
     private final Object roadMapWindow; // Optional reference to the roadmap or other objects
 
     public MissionCompleteDialog(JFrame parentFrame, Object roadMapWindow) {
-        this.parentFrame = parentFrame;
+        if (parentFrame == null) {
+            this.parentFrame = createProxyFrame();
+        } else {
+            this.parentFrame = parentFrame;
+        }
         this.roadMapWindow = roadMapWindow;
+    }
+
+    private JFrame createProxyFrame() {
+        JFrame proxyFrame = new JFrame();
+        proxyFrame.setUndecorated(true);
+        proxyFrame.setSize(0, 0); // Invisible size
+        proxyFrame.setLocationRelativeTo(null);
+        return proxyFrame;
     }
 
     public void showMissionComplete() {
@@ -103,5 +115,3 @@ public class MissionCompleteDialog {
         });
     }
 }
-
-

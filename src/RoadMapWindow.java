@@ -60,8 +60,6 @@ public class RoadMapWindow extends JFrame {
         // Add functionality to Game 1 button
         game1Button.addActionListener(e -> {
             if (!game1Button.isLocked()) {
-                StartScreen startScreen = new StartScreen(this, "game1");
-                startScreen.setVisible(true);
                 new Game1(this).setVisible(true); // Pass the current `RoadMapWindow` instance to `Game1`
 
 
@@ -73,8 +71,6 @@ public class RoadMapWindow extends JFrame {
         // Add functionality to Game 1 button
         game2Button.addActionListener(e -> {
             if (!game2Button.isLocked()) {
-                StartScreen startScreen = new StartScreen(this, "game2");
-                startScreen.setVisible(true);
                 Game2 game2Instance = new Game2(this); // Create an instance of Game2
                 game2Instance.setVisible(true);
 
@@ -90,20 +86,19 @@ public class RoadMapWindow extends JFrame {
 
         // Add functionality to Game 1 button
         game3Button.addActionListener(e -> {
-            if (!game3Button.isLocked()) {
-                StartScreen startScreen = new StartScreen(this, "game3");
-                startScreen.setVisible(true);
-                JFrame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(game3Button);
-                new Game3(parentFrame, this);
+            if (!game1Button.isLocked()) {
+                //Frame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(game3Button);
+                new Game3(this);
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Game 3 is locked! Complete the required steps to unlock.");
             }
         });
 
-
         // Add functionality to Game 1 button
         game4Button.addActionListener(e -> {
-            if (!game4Button.isLocked()) {
-                StartScreen startScreen = new StartScreen(this, "game4");
-                startScreen.setVisible(true);
+            if (!game1Button.isLocked()) {
+
                 //dito lagay game4
                 //new Game4(this).setVisible(true);
 

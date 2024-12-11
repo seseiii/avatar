@@ -2,21 +2,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class Main {
-    public static void main(String[] args) {
-        //new WelcomeWindow();
-        RoadMapWindow welcomeWindow = new RoadMapWindow();
-        welcomeWindow.unlockGame3();
-    }
-}
+public class LastWindow extends JFrame {
 
-class WelcomeWindow extends JFrame {
 
-    private final Image backgroundImage;
+    private Image backgroundImage;
 
-    public WelcomeWindow() {
+    public LastWindow() {
+
+        String username = LoginWindow.getLoggedInUsername();  // Get the logged-in username
+        AccountManager.updatePlayerStatus(username);  // Update status
+
         // Load the background image
-        ImageIcon icon = new ImageIcon("src/img/welcomee.png");
+        ImageIcon icon = new ImageIcon("src/img/end.png");
         backgroundImage = icon.getImage();
 
         setSize(Toolkit.getDefaultToolkit().getScreenSize()); // Set to full-screen size
@@ -41,27 +38,31 @@ class WelcomeWindow extends JFrame {
         backgroundPanel.setLayout(null); // Use null layout for absolute positioning
         setContentPane(backgroundPanel); // Set as content pane for the frame
 
-        // Add Start Button
-        JButton startButton = new JButton("Start");
-        startButton.setFont(new Font("Arial", Font.BOLD, 18));
-        int buttonWidth = 210;
-        int buttonHeight = 50;
 
-        // Style the button
-        startButton.setBackground(new Color(227, 141, 60)); // Lighter brownish-orange color
+        // Add Start Button
+        JButton startButton = new JButton("Ok");
+        startButton.setFont(new Font("Arial", Font.BOLD, 18));
+        int buttonWidth = 150;
+        int buttonHeight = 40;
+
+        // Set the initial position and size of the button at the bottom-right corner of the container
+        startButton.setBounds(backgroundPanel.getWidth() - buttonWidth - 80, backgroundPanel.getHeight() - buttonHeight - 80, buttonWidth, buttonHeight); // Adjusted the X position further to the left
+
+        // Style the button with blue color
+        startButton.setBackground(new Color(173, 216, 230)); // Light blue color
         startButton.setOpaque(true);
         startButton.setBorderPainted(false); // Optional: Remove the border
 
-        // Hover effect
+        // Hover effect for dark blue
         startButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                startButton.setBackground(new Color(181, 101, 29)); // Darker brownish-orange when hovered
+                startButton.setBackground(new Color(70, 130, 180)); // Darker blue when hovered
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                startButton.setBackground(new Color(227, 141, 60)); // Back to lighter brownish-orange
+                startButton.setBackground(new Color(173, 216, 230)); // Back to lighter blue
             }
         });
 
@@ -69,7 +70,7 @@ class WelcomeWindow extends JFrame {
 
         // Action Listener for Start Button
         startButton.addActionListener(e -> {
-            new LoginWindow(); // Pass the current dimensions
+            System.exit(0); // Exit
             dispose(); // Close this window
         });
 
@@ -77,12 +78,13 @@ class WelcomeWindow extends JFrame {
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
+                // Update button position at bottom-right corner when window is resized
                 int frameWidth = getWidth();
                 int frameHeight = getHeight();
 
-                // Update button position and size proportionally
-                int buttonX = (frameWidth - buttonWidth) / 2;
-                int buttonY = frameHeight - 160; // Adjusted vertical position
+                // Update button position to the right bottom of the panel, moving it even more to the left
+                int buttonX = frameWidth - buttonWidth - 80; // Moved further left by 80px for more space
+                int buttonY = frameHeight - buttonHeight - 80; // Raised button by 80px from the bottom
                 startButton.setBounds(buttonX, buttonY, buttonWidth, buttonHeight);
 
                 // Repaint the background to fit the new size
@@ -91,5 +93,8 @@ class WelcomeWindow extends JFrame {
         });
 
         setVisible(true);
+
+
+
     }
 }
