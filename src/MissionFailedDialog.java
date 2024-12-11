@@ -71,8 +71,6 @@ public class MissionFailedDialog {
 
         backButton.addActionListener(e -> {
             missionFailedDialog.dispose();  // Close the dialog
-
-
             failedMessage();
 
 //                // Create a new instance of WelcomeWindow and display it
@@ -157,7 +155,8 @@ public class MissionFailedDialog {
 
         // Action Listener for Start Button
         startButton.addActionListener(e -> {
-            System.exit(0); // Exit the application
+            new Main();
+            //System.exit(0); // Exit the application
             frame.dispose(); // Close the frame
         });
 

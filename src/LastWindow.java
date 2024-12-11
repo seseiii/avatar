@@ -70,8 +70,22 @@ public class LastWindow extends JFrame {
 
         // Action Listener for Start Button
         startButton.addActionListener(e -> {
-            System.exit(0); // Exit
-            dispose(); // Close this window
+            // Load a new image when the button is clicked
+            ImageIcon newIcon = new ImageIcon("src/img/next.png"); // New image path
+            backgroundImage = newIcon.getImage();
+
+            // Repaint the background panel to show the new image
+            backgroundPanel.repaint();
+
+            // Remove the button after it is clicked
+            startButton.setVisible(false);
+
+            // Start a timer to close the window after 10 seconds
+            Timer timer = new Timer(5000, evt -> {
+                System.exit(0); // Exit the system after 10 seconds
+            });
+            timer.setRepeats(false); // Make sure the timer runs only once
+            timer.start();
         });
 
         // Add a component listener to handle resizing (adjust as needed)

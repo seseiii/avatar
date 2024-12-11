@@ -87,7 +87,7 @@ public class RoadMapWindow extends JFrame {
         // Add functionality to Game 1 button
         game3Button.addActionListener(e -> {
             if (!game1Button.isLocked()) {
-                //Frame parentFrame = (JFrame) SwingUtilities.getWindowAncestor(game3Button);
+
                 new Game3(this);
 
             } else {
@@ -100,7 +100,7 @@ public class RoadMapWindow extends JFrame {
             if (!game1Button.isLocked()) {
 
                 //dito lagay game4
-                //new Game4(this).setVisible(true);
+                new Game4(this).setVisible(true);
 
 
             } else {

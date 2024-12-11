@@ -4,9 +4,7 @@ import java.awt.event.*;
 
 public class Main {
     public static void main(String[] args) {
-        //new WelcomeWindow();
-        RoadMapWindow welcomeWindow = new RoadMapWindow();
-        welcomeWindow.unlockGame3();
+        new WelcomeWindow();
     }
 }
 
