@@ -110,12 +110,31 @@ public class StoryWindow extends JFrame {
                     clip = AudioSystem.getClip();
                     clip.open(audioInput);
                     clip.start(); // Start the new music
+
+                    // Add a listener to detect when the audio finishes
+                    clip.addLineListener(event -> {
+                        if (event.getType() == LineEvent.Type.STOP) {
+                            clip.close(); // Ensure the clip is closed
+                            SwingUtilities.invokeLater(() -> navigateToNextImage());
+                        }
+                    });
                 } else {
                     System.out.println("Music file not found: " + soundPaths[index]);
                 }
             }
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void navigateToNextImage() {
+        if (currentImageIndex < imagePaths.length - 1) {
+            currentImageIndex++;
+            setBackgroundImage(currentImageIndex);
+            playBackgroundMusic(currentImageIndex); // Play music for the new image
+        } else {
+            // Close the story window or navigate to the next window
+            transitionToRoadMap();
         }
     }
 

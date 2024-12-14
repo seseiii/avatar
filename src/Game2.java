@@ -2,16 +2,14 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
+
 
 public class Game2 extends JFrame {
 
     private final RoadMapWindow roadMapWindow;
 
     static class Card {
+
         String cardName;
         ImageIcon cardImageIcon;
 
@@ -37,12 +35,13 @@ public class Game2 extends JFrame {
 
     ArrayList<Card> cardSet; // Create a deck of cards with cardNames and cardImageIcons
     ImageIcon cardBackImageIcon;
+    ArrayList<JLabel> lifeIcons = new ArrayList<>();
+    private Image energyIcon;
 
     int boardHeight = rows * cardHeight; // 4*148 = 592px
 
     JFrame frame = new JFrame("Match Cards");
     JLabel errorLabel = new JLabel();
-    JLabel livesLabel = new JLabel();
     JLabel scoreLabel = new JLabel();
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
@@ -83,10 +82,19 @@ public class Game2 extends JFrame {
         frame.add(backgroundPanel, BorderLayout.CENTER);
 
         // error,lives, score
-        livesLabel.setFont(new Font("Arial", Font.PLAIN, 40));
-        livesLabel.setText("Lives: " + lives);
-        livesLabel.setForeground(Color.WHITE); // Set text color to white
-        livesLabel.setBounds(8, 50, 300, 30);  // Adjusted position for the first red line
+        for (int i = 0; i < lives; i++) {
+
+            JLabel textLabel = new JLabel("Lives: ");
+            textLabel.setFont(new Font("Arial", Font.PLAIN, 30)); // Set font and size for the text
+            textLabel.setForeground(Color.WHITE); // Set the text color to white
+            textLabel.setBounds(8, 50, 300, 30); // Position the text label (adjust size and position)
+            textPanel.add(textLabel);  // Add the text label to the panel
+
+            JLabel lifeIconLabel = new JLabel(new ImageIcon(energyIcon));
+            int xPosition = 100 + (i * 40); // Adjust the 40 to control the spacing between icons
+            lifeIconLabel.setBounds(xPosition, 50, 30, 30); // Fixed y, variable x to position horizontally            lifeIcons.add(lifeIconLabel);
+            textPanel.add(lifeIconLabel);  // Add life label to the panel
+        }
 
         errorLabel.setFont(new Font("Arial", Font.PLAIN, 40));
         errorLabel.setText("Errors: " + errorCount);
@@ -104,7 +112,6 @@ public class Game2 extends JFrame {
         textPanel.setLayout(null); // Use absolute layout for custom positioning
 
         // Add labels to the panel
-        textPanel.add(livesLabel);  // Add lives on the first red line
         textPanel.add(errorLabel);  // Error on the second red line
         textPanel.add(scoreLabel);  // Score on the third red line
 
@@ -147,18 +154,25 @@ public class Game2 extends JFrame {
 
                                 // Reduce lives after every 2 errors
                                 if (errorCount % 3 == 0) {
-                                    lives--;
-                                    livesLabel.setText("Lives: " + lives);
+                                        lives--; // Decrease the lives count
 
-                                    if (lives == 0) {
+                                        // Remove the last life icon from the list and the UI
+                                        if (!lifeIcons.isEmpty()) {
+                                            JLabel lifeToRemove = lifeIcons.removeLast(); // Remove the last life
+                                            textPanel.remove(lifeToRemove); // Remove it from the UI
+                                        }
 
-                                        MissionFailedDialog dialog = new MissionFailedDialog(Game2.this, roadMapWindow);
-                                        dialog.showMissionFailed();
-                                        frame.dispose();
-                                        roadMapWindow.dispose();
-                                        Game2.this.setVisible(false);
-                                    }
+                                        // Update the UI
+                                        textPanel.revalidate();
+                                        textPanel.repaint();
 
+                                        if (lives == 0) {
+                                            MissionFailedDialog dialog = new MissionFailedDialog(Game2.this, roadMapWindow);
+                                            dialog.showMissionFailed();
+                                            frame.dispose();
+                                            roadMapWindow.dispose();
+                                            Game2.this.setVisible(false);
+                                        }
                                 }
                                 hideCardTimer.start();
                             } else {
@@ -217,6 +231,16 @@ public class Game2 extends JFrame {
         // Load the back card image
         Image cardBackImg = new ImageIcon("src/img/cardcover.png").getImage();
         cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
+
+        //energyIcon image lives
+        Image energyIconImage = new ImageIcon("src/img/energy.png").getImage();
+        if (energyIconImage == null) {
+            System.out.println("Energy icon image not found.");
+        } else {
+            energyIcon = energyIconImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+        }
+
+
     }
 
     void shuffleCards() {

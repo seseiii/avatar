@@ -312,7 +312,7 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
             }
             return false;
         });
-        if (score > 50 && !gameOver) {
+        if (foods.isEmpty() && !gameOver) {
             gameOver = true;
 
 
@@ -396,116 +396,6 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         }
         else if (pacman.direction == 'R') {
             pacman.image = avatarRightImage;
-        }
-    }
-
-    private void handleGameOver(String message) {
-        lives--; // Decrease energy by 1
-
-        if (lives > 0) {
-            // Get the parent window (if applicable)
-            Window parentWindow = SwingUtilities.getWindowAncestor(this);
-            JDialog gameOverDialog = new JDialog(parentWindow);
-            gameOverDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-            gameOverDialog.setUndecorated(true); // Remove the title bar and window decorations
-
-            // Load and scale the game over image to 305x220 pixels
-            ImageIcon icon = new ImageIcon("src/img/gameover.png");
-            Image scaledImage = icon.getImage().getScaledInstance(305, 220, Image.SCALE_SMOOTH);
-
-            // Create a custom panel that displays the image and overlays buttons
-            JPanel imagePanel = new JPanel() {
-                @Override
-                protected void paintComponent(Graphics g) {
-                    super.paintComponent(g);
-                    // Draw the image as the background
-                    g.drawImage(scaledImage, 0, 0, getWidth(), getHeight(), this);
-                }
-            };
-            imagePanel.setLayout(null); // Use absolute positioning
-            imagePanel.setPreferredSize(new Dimension(305, 220));
-
-            // Magdagdag ng gray na gilid sa image panel
-            imagePanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 5));
-
-            // Create the buttons
-            JButton playAgainButton = new JButton("Play Again");
-            JButton exitButton = new JButton("Exit");
-
-            // Set buttons' background color to brown
-            Color brown = new Color(165, 42, 42); // Brown color
-            Color darkBrown = brown.darker();     // Darker shade of brown for hover effect
-
-            playAgainButton.setBackground(brown);
-            exitButton.setBackground(brown);
-
-            // Set foreground color to white for contrast
-            playAgainButton.setForeground(Color.WHITE);
-            exitButton.setForeground(Color.WHITE);
-
-            // Ensure buttons are opaque so the background color is visible
-            playAgainButton.setOpaque(true);
-            playAgainButton.setContentAreaFilled(true);
-            exitButton.setOpaque(true);
-            exitButton.setContentAreaFilled(true);
-
-            // Remove border for a flat look
-            playAgainButton.setBorderPainted(false);
-            exitButton.setBorderPainted(false);
-
-            // Set buttons' size and position them over the image
-            int buttonWidth = 80;  // Smaller width
-            int buttonHeight = 25; // Smaller height
-            int gap = 10; // Gap between buttons
-
-            // Calculate positions based on image size
-            int totalButtonsWidth = (buttonWidth * 2) + gap;
-            int xStart = (305 - totalButtonsWidth) / 2; // Center buttons horizontally
-            int yPosition = 220 - buttonHeight - 10;     // Position buttons near the bottom (adjusted for border)
-
-            playAgainButton.setBounds(xStart, yPosition, buttonWidth, buttonHeight);
-            exitButton.setBounds(xStart + buttonWidth + gap, yPosition, buttonWidth, buttonHeight);
-
-            // Add action listeners to the buttons
-            playAgainButton.addActionListener(e -> {
-                gameOverDialog.dispose();
-                loadMap();
-                resetPositions();
-                //lives = 3;
-                score = 0;
-                gameOver = false;
-                gameLoop.start();
-            });
-
-            exitButton.addActionListener(e -> {
-                gameOverDialog.dispose();
-                System.exit(0); // Exit the application
-            });
-
-            // Add hover effect to buttons
-            addHoverEffect(playAgainButton, brown, darkBrown);
-            addHoverEffect(exitButton, brown, darkBrown);
-
-            // Add buttons to the image panel
-            imagePanel.add(playAgainButton);
-            imagePanel.add(exitButton);
-
-            // Set the image panel as the content pane of the dialog
-            gameOverDialog.setContentPane(imagePanel);
-
-            // Set the dialog properties
-            gameOverDialog.pack();
-            gameOverDialog.setLocationRelativeTo(this);
-            gameOverDialog.setVisible(true);
-        } else {
-            // Force the GamePanel to repaint and update the energy icons
-            repaint();
-            paintImmediately(0, 0, getWidth(), getHeight());
-
-            // Show failed image and transition to WelcomeWindow
-            /*MissionFailedDialog dialog = new MissionFailedDialog(parentFrame, roadMapWindow);
-            dialog.showMissionFailed();
-            Game3.this.setVisible(false);*/
         }
     }
 
