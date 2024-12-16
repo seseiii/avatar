@@ -7,8 +7,7 @@ public class GameOverDialog {
     private static int energy = 3; // Initial energy value
 
     // Getter for energy
-    public static int getEnergy() {
-        return energy;
+    public static int getEnergy() { return energy;
     }
 
     // Setter for energy

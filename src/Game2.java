@@ -51,6 +51,8 @@ public class Game2 extends JFrame {
     int errorCount = 0;
     ArrayList<JButton> board;
     Timer hideCardTimer;
+    Timer InitialHideCard;
+
     boolean gameReady = false;
     JButton card1Selected;
     JButton card2Selected;
@@ -65,11 +67,13 @@ public class Game2 extends JFrame {
                 new Color(137, 95, 37),
                 null
         ).setVisible(true);
-
+        showGameManual();
 
         setupCards();
         shuffleCards();
+        InitialHideCardTimer();
 
+        frame.setVisible(true);
         frame.setLayout(new BorderLayout());
         frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         frame.setLocationRelativeTo(null);
@@ -154,25 +158,25 @@ public class Game2 extends JFrame {
 
                                 // Reduce lives after every 2 errors
                                 if (errorCount % 3 == 0) {
-                                        lives--; // Decrease the lives count
+                                    lives--; // Decrease the lives count
 
-                                        // Remove the last life icon from the list and the UI
-                                        if (!lifeIcons.isEmpty()) {
-                                            JLabel lifeToRemove = lifeIcons.removeLast(); // Remove the last life
-                                            textPanel.remove(lifeToRemove); // Remove it from the UI
-                                        }
+                                    // Remove the last life icon from the list and the UI
+                                    if (!lifeIcons.isEmpty()) {
+                                        JLabel lifeToRemove = lifeIcons.removeLast(); // Remove the last life
+                                        textPanel.remove(lifeToRemove); // Remove it from the UI
+                                    }
 
-                                        // Update the UI
-                                        textPanel.revalidate();
-                                        textPanel.repaint();
+                                    // Update the UI
+                                    textPanel.revalidate();
+                                    textPanel.repaint();
 
-                                        if (lives == 0) {
-                                            MissionFailedDialog dialog = new MissionFailedDialog(Game2.this, roadMapWindow);
-                                            dialog.showMissionFailed();
-                                            frame.dispose();
-                                            roadMapWindow.dispose();
-                                            Game2.this.setVisible(false);
-                                        }
+                                    if (lives == 0) {
+                                        MissionFailedDialog dialog = new MissionFailedDialog(Game2.this, roadMapWindow);
+                                        dialog.showMissionFailed();
+                                        frame.dispose();
+                                        roadMapWindow.dispose();
+                                        Game2.this.setVisible(false);
+                                    }
                                 }
                                 hideCardTimer.start();
                             } else {
@@ -203,7 +207,6 @@ public class Game2 extends JFrame {
 
         backgroundPanel.add(boardPanel, BorderLayout.CENTER);
 
-        frame.setVisible(true);
         // Create timer to hide cards after a delay (used for flipping cards back)
         hideCardTimer = new Timer(1500, new ActionListener() {
             @Override
@@ -213,6 +216,17 @@ public class Game2 extends JFrame {
         });
         hideCardTimer.setRepeats(false);
         hideCardTimer.start();
+    }
+
+    void InitialHideCardTimer(){
+        InitialHideCard = new Timer(4000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hideCards();
+            }
+        });
+        InitialHideCard.setRepeats(false);
+        InitialHideCard.start();
     }
 
     void setupCards() {
@@ -239,8 +253,6 @@ public class Game2 extends JFrame {
         } else {
             energyIcon = energyIconImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
         }
-
-
     }
 
     void shuffleCards() {
@@ -255,6 +267,7 @@ public class Game2 extends JFrame {
         }
         System.out.println(cardSet);
     }
+
 
     void hideCards() {
         if (gameReady && card1Selected != null && card2Selected != null) { // Only flip 2 cards
@@ -279,9 +292,24 @@ public class Game2 extends JFrame {
         return true; // All cards are face up
     }
 
+    void showGameManual(){
+        JFrame parentFrame = new JFrame("Game Manual");
+        GameManual gameManual = new GameManual(parentFrame, "");
+        gameManual.game2Manual();
+        gameManual.setVisible(true);
+    }
+
+    void skipManual(){
+        JFrame parentFrame = new JFrame("Game Manual");
+        GameManual gameManual = new GameManual(parentFrame, "");
+        gameManual.setVisible(false);
+    }
+
+
+
     // Custom JPanel class to display background image
     class BackgroundPanel extends JPanel {
-        private Image backgroundImage;
+        private final Image backgroundImage;
 
         public BackgroundPanel() {
             // Load the image (adjust the path to your image file)
