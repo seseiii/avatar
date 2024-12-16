@@ -6,8 +6,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import java.awt.event.ActionListener;
 
-class GameManual extends JDialog {
+
+public class GameManual extends JDialog {
     private BufferedImage backgroundImage;
     private int currentImageIndex = 0;
     private Timer autoNextTimer;
@@ -15,8 +17,10 @@ class GameManual extends JDialog {
     private String[] imagePaths;
     int sizeWidth = 1240;
     int sizeHeight = 650;
+    public boolean is_skipped;
 
-    public GameManual(JFrame parent, String imagePath) {
+
+    public GameManual(JFrame parent, String imagePath,Color buttonColor, Runnable onStartAction ) {
         super(parent, true);
 
         // Remove title bar and add border
@@ -67,6 +71,59 @@ class GameManual extends JDialog {
         backgroundLabel.setBounds(0, 0, sizeWidth, sizeHeight);
         backgroundPanel.add(backgroundLabel);
 
+        // Start Button with hover effect
+        JButton skipButton = new JButton("Skip");
+        skipButton.setFont(new Font("Arial", Font.BOLD, 20));
+        skipButton.setFocusPainted(false);
+        skipButton.setBackground(buttonColor);
+        skipButton.setForeground(Color.WHITE);
+        skipButton.setBounds(sizeWidth - 150, sizeHeight - 80, 100, 30);
+        skipButton.setBorderPainted(false);
+        skipButton.setOpaque(true);
+
+        // Hover effect
+        Color originalColor = buttonColor;
+        Color hoverColor = buttonColor.darker();
+        skipButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                skipButton.setBackground(hoverColor);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                skipButton.setBackground(originalColor);
+            }
+        });
+
+        // Start button action
+        skipButton.addActionListener(e -> {
+            dispose();
+            if (onStartAction != null) {
+                onStartAction.run();
+            }
+        });
+        backgroundPanel.add(skipButton);
+    }
+
+    public void game1Manual() {
+        // Define the 5 image paths for the slideshow
+        imagePaths = new String[]{
+                "src/Manual/water0.png",
+                "src/Manual/water1.png",
+                "src/Manual/water2.png",
+                "src/Manual/water3.png",
+                "src/Manual/water4.png",
+                "src/Manual/water5.png",
+                "src/Manual/water6.png",
+                "src/Manual/water7.png",
+                "src/Manual/water8.png"
+        };
+
+        // Set the initial image
+        setBackgroundImage(0);
+
+        autoTimer();
     }
 
     public void game2Manual() {
@@ -84,31 +141,25 @@ class GameManual extends JDialog {
         setBackgroundImage(0);
 
         autoTimer();
+    }
 
-        JButton nextButton = new JButton("Skip");
-        nextButton.setBounds(sizeWidth - 150, sizeHeight - 80, 100, 30);
-        nextButton.setBackground(new Color(173, 216, 230));
-        nextButton.setOpaque(true);
-        nextButton.setBorderPainted(false);
+    public void game3Manual() {
+        // Define the 5 image paths for the slideshow
+        imagePaths = new String[]{
+                "src/Manual/fire0.png",
+                "src/Manual/fire1.png",
+                "src/Manual/fire2.png",
+                "src/Manual/fire3.png",
+                "src/Manual/fire4.png",
+                "src/Manual/fire5.png",
+                "src/Manual/fire6.png",
+                "src/Manual/fire7.png"
+        };
 
-        nextButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                nextButton.setBackground(new Color(135, 206, 235));
-            }
+        // Set the initial image
+        setBackgroundImage(0);
 
-            @Override
-            public void mouseExited(MouseEvent e) {
-                nextButton.setBackground(new Color(173, 216, 230));
-            }
-        });
-
-        nextButton.addActionListener(e -> {
-
-        });
-
-        backgroundLabel.add(nextButton);
-        setVisible(true);
+        autoTimer();
     }
 
     private void setBackgroundImage(int index) {
@@ -136,7 +187,7 @@ class GameManual extends JDialog {
             }
         });
 
-        // Start the timer
         autoNextTimer.start();
     }
+
 }

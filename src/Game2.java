@@ -2,6 +2,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
+import java.awt.event.ActionListener; // Add this import
+
 
 
 public class Game2 extends JFrame {
@@ -51,8 +53,6 @@ public class Game2 extends JFrame {
     int errorCount = 0;
     ArrayList<JButton> board;
     Timer hideCardTimer;
-    Timer InitialHideCard;
-
     boolean gameReady = false;
     JButton card1Selected;
     JButton card2Selected;
@@ -65,13 +65,16 @@ public class Game2 extends JFrame {
                 this,
                 "src/img/earthmission.png",
                 new Color(137, 95, 37),
-                null
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        showGameManual();  // This will be executed when the start button is clicked
+                    }
+                }
         ).setVisible(true);
-        showGameManual();
 
         setupCards();
         shuffleCards();
-        InitialHideCardTimer();
 
         frame.setVisible(true);
         frame.setLayout(new BorderLayout());
@@ -126,6 +129,7 @@ public class Game2 extends JFrame {
         boardPanel.setLayout(new GridLayout(rows, columns));
         boardPanel.setOpaque(false);
 
+
         for (int i = 0; i < cardSet.size(); i++) {
             JButton tile = new JButton();
             tile.setPreferredSize(new Dimension(cardWidth, cardHeight)); // Set size based on card size
@@ -142,6 +146,7 @@ public class Game2 extends JFrame {
                         return;
                     }
                     JButton tile = (JButton) e.getSource();
+
                     if (tile.getIcon() == cardBackImageIcon) {
                         if (card1Selected == null) {
                             card1Selected = tile;
@@ -162,7 +167,7 @@ public class Game2 extends JFrame {
 
                                     // Remove the last life icon from the list and the UI
                                     if (!lifeIcons.isEmpty()) {
-                                        JLabel lifeToRemove = lifeIcons.removeLast(); // Remove the last life
+                                        JLabel lifeToRemove = lifeIcons.remove(lifeIcons.size() - 1);
                                         textPanel.remove(lifeToRemove); // Remove it from the UI
                                     }
 
@@ -207,27 +212,26 @@ public class Game2 extends JFrame {
 
         backgroundPanel.add(boardPanel, BorderLayout.CENTER);
 
-        // Create timer to hide cards after a delay (used for flipping cards back)
+        // Timer to hide all cards after the initial 4-second delay
+        Timer initialHideCardTimer = new Timer(4000, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                hideCards(); // Hide all cards
+            }
+        });
+        initialHideCardTimer.setRepeats(false);
+        initialHideCardTimer.start(); // Start the initial timer
+
+        // Timer to hide mismatched cards after 1.5 seconds
         hideCardTimer = new Timer(1500, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                hideCards();
+                hideCards(); // Hide only mismatched cards
             }
         });
         hideCardTimer.setRepeats(false);
-        hideCardTimer.start();
     }
 
-    void InitialHideCardTimer(){
-        InitialHideCard = new Timer(4000, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                hideCards();
-            }
-        });
-        InitialHideCard.setRepeats(false);
-        InitialHideCard.start();
-    }
 
     void setupCards() {
         cardSet = new ArrayList<Card>();
@@ -292,19 +296,15 @@ public class Game2 extends JFrame {
         return true; // All cards are face up
     }
 
-    void showGameManual(){
-        JFrame parentFrame = new JFrame("Game Manual");
-        GameManual gameManual = new GameManual(parentFrame, "");
-        gameManual.game2Manual();
+    void showGameManual() {
+        GameManual gameManual = new GameManual(
+                frame,
+                "",
+                new Color(137, 95, 37),
+                null); // Use the main game frame as the parent
+        gameManual.game2Manual(); // Start the manual
         gameManual.setVisible(true);
     }
-
-    void skipManual(){
-        JFrame parentFrame = new JFrame("Game Manual");
-        GameManual gameManual = new GameManual(parentFrame, "");
-        gameManual.setVisible(false);
-    }
-
 
 
     // Custom JPanel class to display background image

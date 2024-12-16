@@ -7,6 +7,7 @@ import java.util.Random;
 public class Game3 extends JPanel implements ActionListener, KeyListener {
 
     private static final long serialVersionUID = 1L;
+    private JFrame parentFrame;
     private final RoadMapWindow roadMapWindow;
     private Image energyIcon;
 
@@ -153,12 +154,26 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         avatarDownImage = new ImageIcon(getClass().getResource("/img/down.png")).getImage();
         avatarLeftImage = new ImageIcon(getClass().getResource("/img/left.png")).getImage();
         avatarRightImage = new ImageIcon(getClass().getResource("/img/right.png")).getImage();
+        energyIcon = new ImageIcon(getClass().getResource("/img/energy.png")).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
+
+        if (energyIcon == null) {
+            System.out.println("Energy icon not loaded correctly!");
+        } else {
+            System.out.println("Energy icon loaded successfully!");
+        }
 
         new StartScreen(
                 frame,
                 "src/img/fireMission.png",
                 new Color(124, 15, 15),
-                null
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        GameManual gameManual = new GameManual(parentFrame, "",new Color(0, 155, 155),null); // Use the main game frame as the parent
+                        gameManual.game3Manual(); // Start the manual
+                        gameManual.setVisible(true);
+                    }
+                }
         ).setVisible(true);
 
         startGame();
@@ -235,16 +250,29 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
     }
 
     public void draw(Graphics g) {
-        for (int i = 0; i < GameOverDialog.getEnergy(); i++) {
-            g.drawImage(energyIcon, 10 + (i * 40), 40, 30, 30, this);
-        }
 
+
+        // Rest of the game drawing logic
         g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
         int mapWidth = columnCount * tileSize;
         int mapHeight = rowCount * tileSize;
         int xOffset = (getWidth() - mapWidth) / 7;
         int yOffset = (getHeight() - mapHeight) / 7;
+
+        // Draw energy icons at the top
+        // Draw energy icons with larger size
+        // Draw enlarged energy icons with original spacing
+        g.setFont(new Font("Arial", Font.PLAIN, 70));
+        g.setColor(Color.WHITE); // Ensure the text is visible
+        for (int i = 0; i < lives; i++) {
+            int x = 990 + (i * 80); // Increase spacing to 55 pixels
+            int y = 75;            // Position icons slightly below the text
+            g.drawString("Lives: " , 775, 125);
+            g.drawImage(energyIcon, x, y, 60, 60, this); // Enlarged icon: 40x40 size
+        }
+
+
 
         g.drawImage(pacman.image, pacman.x + xOffset, pacman.y + yOffset, pacman.width, pacman.height, null);
 
@@ -264,13 +292,15 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         g.setFont(new Font("Arial", Font.PLAIN, 70));
         g.setColor(Color.WHITE); // Ensure the text is visible
         if (gameOver) {
-            g.drawString("", 830, 100); // Adjusted position for score and lives
+            g.drawString("Score: " + score, 775, 275); // Adjusted position for score and lives
+//            g.drawString("", 830, 100); // Adjusted position for score and lives
         } else {
-            g.drawString("Lives: " + lives , 830, 100); // Adjusted position for score and lives
-            g.drawString("Score: " + score, 830, 250); // Adjusted position for score and lives
 
+//            g.drawString("Lives: " + GameOverDialog.getEnergy(), 990, 100); // Adjusted position for score and lives
+            g.drawString("Score: " + score, 775, 275); // Adjusted position for score and lives
         }
     }
+
 
     public void move() {
         pacman.x += pacman.velocityX;
@@ -287,6 +317,10 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         for (Block ghost : ghosts) {
             if (collision(ghost, pacman)) {
                 gameOver = true;
+
+                lives--;
+                repaint();
+
                 GameOverDialog.handleGameOver(SwingUtilities.getWindowAncestor(this), this::startGame);
                 return;
             }
@@ -397,16 +431,5 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
         else if (pacman.direction == 'R') {
             pacman.image = avatarRightImage;
         }
-    }
-
-    private void addHoverEffect(JButton button, Color normalColor, Color hoverColor) {
-        button.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                button.setBackground(hoverColor);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                button.setBackground(normalColor);
-            }
-        });
     }
 }

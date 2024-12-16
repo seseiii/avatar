@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 
 public class Game1 extends JFrame {
     private final RoadMapWindow roadMapWindow;
+    private JFrame parentFrame;
 
     public Game1(RoadMapWindow roadMapWindow) {
 
@@ -20,7 +21,14 @@ public class Game1 extends JFrame {
                 this,
                 "src/img/watermision1.png",
                 new Color(0, 155, 155),
-                null
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        GameManual gameManual = new GameManual(parentFrame, "",new Color(0, 155, 155),null); // Use the main game frame as the parent
+                        gameManual.game1Manual(); // Start the manual
+                        gameManual.setVisible(true);
+                    }
+                }
         ).setVisible(true);
 
         // Configure the main game frame
@@ -34,8 +42,9 @@ public class Game1 extends JFrame {
 
     // Main Game Panel
     class GamePanel extends JPanel implements ActionListener {
-        private final int TILE_SIZE = 20;
-        private final int AANG_SIZE = TILE_SIZE * 4;
+
+        private final int TILE_SIZE = 30;
+        private final int AANG_SIZE = TILE_SIZE * 3;
         private final int BOAT_SIZE = TILE_SIZE * 3;
         private int WIDTH;
         private int HEIGHT;
@@ -57,6 +66,7 @@ public class Game1 extends JFrame {
         private Image aangImage;
 
         public GamePanel() {
+
             loadImages();
             setFocusable(true);
             requestFocusInWindow();
@@ -94,8 +104,8 @@ public class Game1 extends JFrame {
                 snakeHeadImage = new ImageIcon("src/img/boat.png").getImage().getScaledInstance(BOAT_SIZE, BOAT_SIZE, Image.SCALE_SMOOTH);
                 snakeBodyImage = new ImageIcon("src/img/fish.png").getImage();
                 foodImage = new ImageIcon("src/img/fish.png").getImage();
-                backgroundImage = new ImageIcon("src/img/waterbg.jpg").getImage();
-                energyIcon = new ImageIcon("src/img/energy.png").getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
+                backgroundImage = new ImageIcon("src/img/waterbg.png").getImage();
+                energyIcon = new ImageIcon("src/img/energy.png").getImage().getScaledInstance(100, 100, Image.SCALE_SMOOTH);
                 aangImage = new ImageIcon("src/img/aang.png").getImage().getScaledInstance(AANG_SIZE, AANG_SIZE, Image.SCALE_SMOOTH);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(this, "Error loading images: " + e.getMessage(),
@@ -255,13 +265,13 @@ public class Game1 extends JFrame {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
 
             // Draw the score
-            g.setColor(Color.WHITE);
+            g.setColor(Color.black);
             g.setFont(new Font("Arial", Font.BOLD, 20));
             g.drawString("Score: " + score, 10, 30);
 
             // Draw energy icons at the top
             for (int i = 0; i < GameOverDialog.getEnergy(); i++) {
-                g.drawImage(energyIcon, 10 + (i * 40), 40, 30, 30, this);
+                g.drawImage(energyIcon, 10 + (i * 80), 40, 60, 60, this);
             }
 
             // Draw the snake
@@ -287,6 +297,5 @@ public class Game1 extends JFrame {
                 }
             }
         }
-
     }
 }

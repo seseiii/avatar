@@ -60,7 +60,7 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
     private int energy = 3; // Player starts with 3 energy points
 
     // Mission
-    private final int MISSION_SCORE = 10;
+    private final int MISSION_SCORE = 100;
 
     public Game4(RoadMapWindow roadMapWindow) {
 
@@ -78,7 +78,7 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
 
         // Load images
         try {
-            backgroundImg = new ImageIcon(getClass().getResource("/img/flappybirdbg.jpg")).getImage();
+            backgroundImg = new ImageIcon(getClass().getResource("/img/airbg.jpg")).getImage();
             birdImg = new ImageIcon(getClass().getResource("/img/flappybird.png")).getImage();
             cloudImg = new ImageIcon(getClass().getResource("/img/cloud.png")).getImage();
             energyIcon = new ImageIcon(getClass().getResource("/img/energy.png")).getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH);
@@ -172,6 +172,7 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
     class Obstacle {
         int x, y, width, height;
         Image img;
+        boolean passed = false; // Tracks if the bird has passed this cloud
 
         Obstacle(Image img, int x, int y, int width, int height) {
             this.img = img;
@@ -188,27 +189,50 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
         }
     }
 
+
     void playbutton() {
+        // Load the image as an Icon
+        ImageIcon playIcon = new ImageIcon("src/img/playbutton.png"); // Adjust the path if needed
 
-        // Start Button
-        playButton = new JButton("Play");
-        playButton.setBounds((boardWidth - 80) / 2, (boardHeight / 2) + 200, 80, 40);
+        // Resize the image to match the new button size
+        int buttonWidth = 130; // Adjusted width
+        int buttonHeight = 70; // Adjusted height
+        Image scaledImage = playIcon.getImage().getScaledInstance(buttonWidth, buttonHeight, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
 
+        // Create the play button
+        playButton = new JButton(scaledIcon);
+        playButton.setBounds((boardWidth - buttonWidth) / 2, (boardHeight / 2) + 200, buttonWidth, buttonHeight);
         playButton.setFocusable(false);
-        playButton.setFont(new Font("Arial", Font.BOLD, 20));
-        playButton.setBackground(new Color(30, 171, 205));
-        playButton.setForeground(Color.WHITE);
         playButton.setBorderPainted(false);
-        playButton.setOpaque(true);
+        playButton.setContentAreaFilled(false); // Makes the background transparent
+        playButton.setOpaque(false);
+
+        // Add hover effect for zooming
+        playButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                // Increase size slightly for zoom effect
+                Image zoomedImage = playIcon.getImage().getScaledInstance(buttonWidth + 20, buttonHeight + 10, Image.SCALE_SMOOTH);
+                playButton.setIcon(new ImageIcon(zoomedImage));
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                // Revert to original size
+                playButton.setIcon(scaledIcon);
+            }
+        });
+
+        // Add action listener to start the game
         playButton.addActionListener(e -> {
             disposePlayButton(); // Dispose of the play button
             startGame(); // Start the game after disposing of the play button
-
         });
 
         add(playButton);
-
     }
+
 
     void startGame() {
 
@@ -223,13 +247,49 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
     }
 
     void placeObstacles() {
-        int numberOfClouds = 3;
+        int numberOfClouds = 3; // Number of clouds to place
+        ArrayList<Obstacle> newClouds = new ArrayList<>();
+
         for (int i = 0; i < numberOfClouds; i++) {
-            int cloudX = boardWidth + (i * 300) + random.nextInt(100);
-            int cloudY = random.nextInt(boardHeight - cloudHeight);
-            obstacles.add(new Obstacle(cloudImg, cloudX, cloudY, cloudWidth, cloudHeight));
+            boolean validPlacement = false;
+            int cloudX = 0;
+            int cloudY = 0;
+
+            // Retry placement until valid position is found
+            while (!validPlacement) {
+                cloudX = boardWidth + (i * 300) + random.nextInt(100);
+                cloudY = random.nextInt(boardHeight - cloudHeight);
+
+                Rectangle newCloudBounds = new Rectangle(cloudX, cloudY, cloudWidth, cloudHeight);
+                validPlacement = true;
+
+                // Check for collisions with other clouds
+                for (Obstacle existingCloud : obstacles) {
+                    Rectangle existingBounds = new Rectangle(existingCloud.x, existingCloud.y, existingCloud.width, existingCloud.height);
+                    if (newCloudBounds.intersects(existingBounds)) {
+                        validPlacement = false;
+                        break;
+                    }
+                }
+
+                // Check for collisions with newly created clouds in this batch
+                for (Obstacle newCloud : newClouds) {
+                    Rectangle newBounds = new Rectangle(newCloud.x, newCloud.y, newCloud.width, newCloud.height);
+                    if (newCloudBounds.intersects(newBounds)) {
+                        validPlacement = false;
+                        break;
+                    }
+                }
+            }
+
+            // Add the cloud after confirming placement
+            newClouds.add(new Obstacle(cloudImg, cloudX, cloudY, cloudWidth, cloudHeight));
         }
+
+        // Add newly placed clouds to the obstacles list
+        obstacles.addAll(newClouds);
     }
+
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -251,7 +311,7 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
         }
 
         // Draw the score
-        g.setColor(Color.ORANGE);
+        g.setColor(new Color(10, 180, 190));
         g.setFont(new Font("Arial", Font.BOLD, 48));
         g.drawString(String.valueOf((int) score), boardWidth / 2 - 25, 60);
 
@@ -266,78 +326,102 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
     public void move() {
         if (!gameStarted) return; // Exit if the game has not started
 
+        // Apply gravity to bird's vertical velocity
         velocityY += gravity;
         bird.y += velocityY;
 
-        if (bird.y < 0) bird.y = 0; // Prevent bird from going above the screen
+        // Prevent bird from going above the screen
+        if (bird.y < 0) bird.y = 0;
 
+        // Iterate through obstacles
         for (int i = 0; i < obstacles.size(); i++) {
             Obstacle obstacle = obstacles.get(i);
             obstacle.x += velocityX;
 
+            // Check if the bird successfully jumps over the obstacle
+            if (obstacle.x + obstacle.width < bird.x && !obstacleCleared(obstacle) && bird.y < obstacle.y) {
+                score += 5; // Increment score
+                markObstacleCleared(obstacle);
+            }
+
+            // Remove obstacle if it moves out of screen
             if (obstacle.x + obstacle.width < 0) {
-                score += 5;
                 obstacles.remove(i);
                 i--;
                 continue;
             }
 
+            // Check for collision
             if (collision(bird, obstacle)) {
                 gameOver = true;
                 gameStarted = false;
 
-                GameOverDialog.decrementEnergy();
-                // Call GameOverDialog and pass a lambda for restarting the game
+                // Decrease energy upon collision
+                energy--;
+                repaint(); // Update UI to reflect changes
+
+                // Handle game over dialog
                 GameOverDialog.handleGameOver(
-                        SwingUtilities.getWindowAncestor(this), // Pass the parent window
-                        this::startGame // Restart the game using the GamePanel instance
+                        SwingUtilities.getWindowAncestor(this), // Parent window
+                        this::startGame // Restart game
                 );
                 break;
             }
         }
 
+        // Check if bird falls out of screen
         if (bird.y > boardHeight) {
             gameOver = true;
             gameStarted = false;
+
+            // Decrease energy if the bird falls
             energy--;
-            // Call GameOverDialog and pass a lambda for restarting the game
+            repaint(); // Update UI
+
+            // Handle game over dialog
             GameOverDialog.handleGameOver(
-                    SwingUtilities.getWindowAncestor(this), // Pass the parent window
-                    this::startGame // Restart the game using the GamePanel instance
+                    SwingUtilities.getWindowAncestor(this), // Parent window
+                    this::startGame // Restart game
             );
         }
 
+        // Check if mission is complete
         if (score >= MISSION_SCORE) {
             gameLoop.stop();
             placeObstacleTimer.stop();
 
             SwingUtilities.invokeLater(() -> {
-
-                // Show Mission Failed dialog
+                // Show Mission Complete dialog
                 MissionCompleteDialog dialog = new MissionCompleteDialog(null, roadMapWindow);
-                dialog.showMissionComplete(); // Show the dialog
+                dialog.showMissionComplete(); // Display dialog
 
-                // Make the window invisible first
+                // Hide current game panel
                 this.setVisible(false);
 
-                // Now dispose the parent window (or Game3)
+                // Dispose the parent window
                 Window parentWindow = (Window) SwingUtilities.getWindowAncestor(Game4.this);
                 if (parentWindow != null) {
-                    parentWindow.dispose();  // Dispose the parent window
+                    parentWindow.dispose();
                 }
-
-                roadMapWindow.dispose();
-
-
-//            	// You can also hide Game3 here if it's not already done
-//            	Game4.this.setVisible(false);
-
-                new LastWindow();
-
             });
-
         }
     }
+
+
+
+
+    private final ArrayList<Obstacle> clearedObstacles = new ArrayList<>();
+
+    private boolean obstacleCleared(Obstacle obstacle) {
+        return clearedObstacles.contains(obstacle);
+    }
+
+    private void markObstacleCleared(Obstacle obstacle) {
+        clearedObstacles.add(obstacle);
+    }
+
+
+
 
     Rectangle collisionArea = null;
 
