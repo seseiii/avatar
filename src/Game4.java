@@ -10,7 +10,7 @@ import javax.swing.*;
 
 public class Game4 extends JPanel implements ActionListener, KeyListener {
     private static final long serialVersionUID = 1L;
-
+    private JFrame parentFrame;
     private final RoadMapWindow roadMapWindow;
 
     int boardWidth;
@@ -120,7 +120,14 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
                     tempFrame,
                     "src/img/airmission1.png",
                     new Color(10, 180, 190),
-                    null
+                    new Runnable() {
+                        @Override
+                        public void run() {
+                            GameManual gameManual = new GameManual(parentFrame, "",new Color(0, 155, 155),null); // Use the main game frame as the parent
+                            gameManual.game4Manual(); // Start the manual
+                            gameManual.setVisible(true);
+                        }
+                    }
             ).setVisible(true);
 
             tempFrame.dispose(); // Dispose of the temporary frame after StartScreen closes

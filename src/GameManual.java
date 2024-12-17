@@ -153,7 +153,26 @@ public class GameManual extends JDialog {
                 "src/Manual/fire4.png",
                 "src/Manual/fire5.png",
                 "src/Manual/fire6.png",
-                "src/Manual/fire7.png"
+                "src/Manual/fire7.png",
+                "src/Manual/fire8.png"
+        };
+
+        // Set the initial image
+        setBackgroundImage(0);
+
+        autoTimer();
+    }
+
+    public void game4Manual() {
+        // Define the 5 image paths for the slideshow
+        imagePaths = new String[]{
+                "src/Manual/air0.png",
+                "src/Manual/air1.png",
+                "src/Manual/air2.png",
+                "src/Manual/air3.png",
+                "src/Manual/air4.png",
+                "src/Manual/air5.png",
+                "src/Manual/air6.png"
         };
 
         // Set the initial image

@@ -9,6 +9,7 @@ import java.awt.event.ActionListener; // Add this import
 public class Game2 extends JFrame {
 
     private final RoadMapWindow roadMapWindow;
+    private JFrame parentFrame;
 
     static class Card {
 
@@ -64,13 +65,14 @@ public class Game2 extends JFrame {
         new StartScreen(
                 this,
                 "src/img/earthmission.png",
-                new Color(137, 95, 37),
-                new Runnable() {
-                    @Override
-                    public void run() {
-                        showGameManual();  // This will be executed when the start button is clicked
-                    }
+                new Color(137, 95, 37),new Runnable() {
+                @Override
+                public void run() {
+                    GameManual gameManual = new GameManual(parentFrame, "",new Color(0, 155, 155),null); // Use the main game frame as the parent
+                    gameManual.game1Manual(); // Start the manual
+                    gameManual.setVisible(true);
                 }
+            }
         ).setVisible(true);
 
         setupCards();
@@ -295,17 +297,6 @@ public class Game2 extends JFrame {
         }
         return true; // All cards are face up
     }
-
-    void showGameManual() {
-        GameManual gameManual = new GameManual(
-                frame,
-                "",
-                new Color(137, 95, 37),
-                null); // Use the main game frame as the parent
-        gameManual.game2Manual(); // Start the manual
-        gameManual.setVisible(true);
-    }
-
 
     // Custom JPanel class to display background image
     class BackgroundPanel extends JPanel {
