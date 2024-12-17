@@ -10,6 +10,7 @@ public class Game2 extends JFrame {
 
     private final RoadMapWindow roadMapWindow;
     private JFrame parentFrame;
+    private Image energyIcon;
 
     static class Card {
 
@@ -38,8 +39,6 @@ public class Game2 extends JFrame {
 
     ArrayList<Card> cardSet; // Create a deck of cards with cardNames and cardImageIcons
     ImageIcon cardBackImageIcon;
-    ArrayList<JLabel> lifeIcons = new ArrayList<>();
-    private Image energyIcon;
 
     int boardHeight = rows * cardHeight; // 4*148 = 592px
 
@@ -49,8 +48,8 @@ public class Game2 extends JFrame {
     JPanel textPanel = new JPanel();
     JPanel boardPanel = new JPanel();
 
-    int lives = 3;
     int score = 0;
+    int lives = 3;
     int errorCount = 0;
     ArrayList<JButton> board;
     Timer hideCardTimer;
@@ -69,7 +68,7 @@ public class Game2 extends JFrame {
                 @Override
                 public void run() {
                     GameManual gameManual = new GameManual(parentFrame, "",new Color(0, 155, 155),null); // Use the main game frame as the parent
-                    gameManual.game1Manual(); // Start the manual
+                    gameManual.game2Manual(); // Start the manual
                     gameManual.setVisible(true);
                 }
             }
@@ -89,31 +88,24 @@ public class Game2 extends JFrame {
         BackgroundPanel backgroundPanel = new BackgroundPanel();
         backgroundPanel.setLayout(new BorderLayout()); // Use BorderLayout for the background panel
         frame.add(backgroundPanel, BorderLayout.CENTER);
+        energyIcon = new ImageIcon(getClass().getResource("/img/energy.png")).getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH);
 
-        // error,lives, score
-        for (int i = 0; i < lives; i++) {
-
-            JLabel textLabel = new JLabel("Lives: ");
-            textLabel.setFont(new Font("Arial", Font.PLAIN, 30)); // Set font and size for the text
-            textLabel.setForeground(Color.WHITE); // Set the text color to white
-            textLabel.setBounds(8, 50, 300, 30); // Position the text label (adjust size and position)
-            textPanel.add(textLabel);  // Add the text label to the panel
-
-            JLabel lifeIconLabel = new JLabel(new ImageIcon(energyIcon));
-            int xPosition = 100 + (i * 40); // Adjust the 40 to control the spacing between icons
-            lifeIconLabel.setBounds(xPosition, 50, 30, 30); // Fixed y, variable x to position horizontally            lifeIcons.add(lifeIconLabel);
-            textPanel.add(lifeIconLabel);  // Add life label to the panel
+        if (energyIcon == null) {
+            System.out.println("Energy icon not loaded correctly!");
+        } else {
+            System.out.println("Energy icon loaded successfully!");
         }
+        // error,lives, score
 
         errorLabel.setFont(new Font("Arial", Font.PLAIN, 40));
         errorLabel.setText("Errors: " + errorCount);
         errorLabel.setForeground(Color.WHITE); // Set text color to white
-        errorLabel.setBounds(8, 120, 300, 30);  // Adjusted position for the second red line
+        errorLabel.setBounds(8, 140, 300, 30);  // Adjusted position for the second red line
 
         scoreLabel.setFont(new Font("Arial", Font.PLAIN, 40));
         scoreLabel.setText("Score: " + score);
         scoreLabel.setForeground(Color.WHITE); // Set text color to white
-        scoreLabel.setBounds(8, 200, 300, 30);  // Adjusted position for the third red line
+        scoreLabel.setBounds(8, 230, 300, 30);  // Adjusted position for the third red line
 
         // Set text panel size and position on the right side
         textPanel.setPreferredSize(new Dimension(300, boardHeight));
@@ -166,12 +158,6 @@ public class Game2 extends JFrame {
                                 // Reduce lives after every 2 errors
                                 if (errorCount % 3 == 0) {
                                     lives--; // Decrease the lives count
-
-                                    // Remove the last life icon from the list and the UI
-                                    if (!lifeIcons.isEmpty()) {
-                                        JLabel lifeToRemove = lifeIcons.remove(lifeIcons.size() - 1);
-                                        textPanel.remove(lifeToRemove); // Remove it from the UI
-                                    }
 
                                     // Update the UI
                                     textPanel.revalidate();
@@ -252,13 +238,6 @@ public class Game2 extends JFrame {
         Image cardBackImg = new ImageIcon("src/img/cardcover.png").getImage();
         cardBackImageIcon = new ImageIcon(cardBackImg.getScaledInstance(cardWidth, cardHeight, java.awt.Image.SCALE_SMOOTH));
 
-        //energyIcon image lives
-        Image energyIconImage = new ImageIcon("src/img/energy.png").getImage();
-        if (energyIconImage == null) {
-            System.out.println("Energy icon image not found.");
-        } else {
-            energyIcon = energyIconImage.getScaledInstance(30, 30, Image.SCALE_SMOOTH);
-        }
     }
 
     void shuffleCards() {
@@ -312,6 +291,17 @@ public class Game2 extends JFrame {
             super.paintComponent(g);
             // Draw the background image, scaling it to fill the panel
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
+            // Draw energy icons at the top
+            // Draw energy icons with larger size
+            // Draw enlarged energy icons with original spacing
+            g.setFont(new Font("Arial", Font.PLAIN, 42));
+            g.setColor(Color.WHITE); // Ensure the text is visible
+            for (int i = 0; i < lives; i++) {
+                int x = 1105 + (i * 45);
+                int y = 50;
+                g.drawString("Lives: " , 990, 80);
+                g.drawImage(energyIcon, x, y, 40, 40, this); // Enlarged icon: 40x40 size
+            }
         }
     }
 }
