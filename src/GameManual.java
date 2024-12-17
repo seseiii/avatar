@@ -17,7 +17,6 @@ public class GameManual extends JDialog {
     private String[] imagePaths;
     int sizeWidth = 1240;
     int sizeHeight = 650;
-    public boolean is_skipped;
 
 
     public GameManual(JFrame parent, String imagePath,Color buttonColor, Runnable onStartAction ) {

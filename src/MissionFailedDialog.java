@@ -155,8 +155,9 @@ public class MissionFailedDialog {
 
         // Action Listener for Start Button
         startButton.addActionListener(e -> {
-            new Main();
-            //System.exit(0); // Exit the application
+            WelcomeWindow welcomeWindow = new WelcomeWindow(); // Create an instance of WelcomeWindow
+            welcomeWindow.setVisible(true); // Make the WelcomeWindow visible
+            //System.exit(0);
             frame.dispose(); // Close the frame
         });
 

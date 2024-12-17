@@ -22,7 +22,7 @@ public class CreateAccountWindow extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
 
         // Load the background image
-        ImageIcon icon = new ImageIcon("src/createaccbg.png"); // Use your uploaded image
+        ImageIcon icon = new ImageIcon("src/img/createaccbg.png"); // Use your uploaded image
         backgroundImage = icon.getImage();
 
         // Create a custom panel for the background
@@ -38,82 +38,82 @@ public class CreateAccountWindow extends JFrame {
 
         // Add UI Components
         JLabel firstNameLabel = new JLabel("First Name");
-        firstNameLabel.setBounds(346, 269, 200, 30);
+        firstNameLabel.setBounds(300, 200, 200, 30);
         firstNameLabel.setForeground(Color.WHITE);
         firstNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(firstNameLabel);
 
         JTextField firstNameField = new JTextField();
-        firstNameField.setBounds(484, 270, 222, 30);
+        firstNameField.setBounds(420, 200, 222, 30);
         firstNameField.setFont(new Font("Arial", Font.PLAIN, 16));
         backgroundPanel.add(firstNameField);
 
         JLabel firstNameStatusLabel = new JLabel();
-        firstNameStatusLabel.setBounds(484, 300, 400, 30);
+        firstNameStatusLabel.setBounds(420, 210, 400, 30);
         firstNameStatusLabel.setForeground(new Color(139, 0, 0)); // Dark red
         firstNameStatusLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         backgroundPanel.add(firstNameStatusLabel);
 
         JLabel lastNameLabel = new JLabel("Last Name");
-        lastNameLabel.setBounds(844, 269, 200, 30);
+        lastNameLabel.setBounds(300, 290, 200, 30);
         lastNameLabel.setForeground(Color.WHITE);
         lastNameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(lastNameLabel);
 
         JTextField lastNameField = new JTextField();
-        lastNameField.setBounds(971, 270, 222, 30);
+        lastNameField.setBounds(420, 290, 222, 30);
         lastNameField.setFont(new Font("Arial", Font.PLAIN, 16));
         backgroundPanel.add(lastNameField);
 
         JLabel lastNameStatusLabel = new JLabel();
-        lastNameStatusLabel.setBounds(971, 300, 400, 30);
+        lastNameStatusLabel.setBounds(420, 290, 400, 30);
         lastNameStatusLabel.setForeground(new Color(139, 0, 0)); // Dark red
         lastNameStatusLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         backgroundPanel.add(lastNameStatusLabel);
 
         JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setBounds(346, 387, 200, 30);
+        usernameLabel.setBounds(300, 390, 200, 30);
         usernameLabel.setForeground(Color.WHITE);
         usernameLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(usernameLabel);
 
         JTextField usernameField = new JTextField();
-        usernameField.setBounds(484, 388, 222, 30);
+        usernameField.setBounds(420, 390, 222, 30);
         usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
         backgroundPanel.add(usernameField);
 
         JLabel usernameStatusLabel = new JLabel();
-        usernameStatusLabel.setBounds(484, 418, 400, 30);
+        usernameStatusLabel.setBounds(420, 390, 400, 30);
         usernameStatusLabel.setForeground(new Color(139, 0, 0)); // Dark red
         usernameStatusLabel.setFont(new Font("Arial", Font.ITALIC, 14));
         backgroundPanel.add(usernameStatusLabel);
 
         JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setBounds(346, 516, 200, 30);
+        passwordLabel.setBounds(300, 470, 200, 30);
         passwordLabel.setForeground(Color.WHITE);
         passwordLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(passwordLabel);
 
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setBounds(484, 517, 222, 30);
+        passwordField.setBounds(420, 470, 222, 30);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
         passwordField.setEnabled(false);
         backgroundPanel.add(passwordField);
 
         JLabel confirmPasswordLabel = new JLabel("Confirm Password");
-        confirmPasswordLabel.setBounds(781, 516, 200, 30);
+        confirmPasswordLabel.setBounds(731, 430, 200, 30);
         confirmPasswordLabel.setForeground(Color.WHITE);
         confirmPasswordLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(confirmPasswordLabel);
 
         JPasswordField confirmPasswordField = new JPasswordField();
-        confirmPasswordField.setBounds(971, 517, 222, 30);
+        confirmPasswordField.setBounds(730, 470, 222, 30);
         confirmPasswordField.setFont(new Font("Arial", Font.PLAIN, 16));
         confirmPasswordField.setEnabled(false);
         backgroundPanel.add(confirmPasswordField);
 
         JButton createAccountButton = new JButton("Create Account");
-        createAccountButton.setBounds(482, 649, 200, 40);
+        createAccountButton.setBounds(400, 565, 200, 40);
         createAccountButton.setBackground(new Color(101, 67, 33)); // Dark brown
         createAccountButton.setForeground(Color.WHITE); // Set text to white
         createAccountButton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -123,7 +123,7 @@ public class CreateAccountWindow extends JFrame {
         backgroundPanel.add(createAccountButton);
 
         JButton backButton = new JButton("Back");
-        backButton.setBounds(912, 649, 150, 40);
+        backButton.setBounds(740, 565, 150, 40);
         backButton.setBackground(new Color(101, 67, 33)); // Dark brown
         backButton.setForeground(Color.WHITE);
         backButton.setFont(new Font("Arial", Font.BOLD, 18));

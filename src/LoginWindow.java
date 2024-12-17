@@ -39,24 +39,24 @@ public class LoginWindow extends JFrame {
 
         // Add UI Components
         JLabel userLabel = new JLabel("Username");
-        userLabel.setBounds(940, 350, 200, 40);
+        userLabel.setBounds( 770, 300, 200, 40);
         userLabel.setForeground(new Color(101, 67, 33));
         userLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(userLabel);
 
         JTextField usernameField = new JTextField();
-        usernameField.setBounds(1120, 350, 250, 40);
+        usernameField.setBounds(880, 300, 250, 40);
         usernameField.setFont(new Font("Arial", Font.PLAIN, 16));
         backgroundPanel.add(usernameField);
 
         JLabel passLabel = new JLabel("Password");
-        passLabel.setBounds(940, 470, 200, 40);
+        passLabel.setBounds(770, 420, 200, 40);
         passLabel.setForeground(new Color(101, 67, 33));
         passLabel.setFont(new Font("Arial", Font.BOLD, 18));
         backgroundPanel.add(passLabel);
 
         JPasswordField passwordField = new JPasswordField();
-        passwordField.setBounds(1120, 470, 250, 40);
+        passwordField.setBounds(880, 420, 250, 40);
         passwordField.setFont(new Font("Arial", Font.PLAIN, 16));
         backgroundPanel.add(passwordField);
 
@@ -87,7 +87,7 @@ public class LoginWindow extends JFrame {
 
         // Login Button
         JButton loginButton = new JButton("Login");
-        loginButton.setBounds(935, 600, 150, 40);
+        loginButton.setBounds(760, 525, 150, 40);
         loginButton.setBackground(new Color(181, 101, 29));
         loginButton.setForeground(Color.WHITE);
         loginButton.setFont(new Font("Arial", Font.BOLD, 18));
@@ -126,7 +126,7 @@ public class LoginWindow extends JFrame {
 
         // Create Account Button
         JButton createAccountButton = new JButton("Create Account");
-        createAccountButton.setBounds(1150, 600, 200, 40);
+        createAccountButton.setBounds(950, 525, 200, 40);
         createAccountButton.setBackground(new Color(181, 101, 29));
         createAccountButton.setForeground(Color.WHITE);
         createAccountButton.setFont(new Font("Arial", Font.BOLD, 18));

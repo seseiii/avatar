@@ -26,7 +26,6 @@ public class StoryWindow extends JFrame {
     };
 
     private Clip clip; // Clip to play audio
-    private JButton nextButton;
 
     public StoryWindow() {
         setUndecorated(true); // Remove window decorations
@@ -48,7 +47,7 @@ public class StoryWindow extends JFrame {
         add(backgroundLabel);
 
         // Add "Next" button
-        nextButton = new JButton("Next");
+        JButton nextButton = new JButton("Next");
         nextButton.setBounds(screenSize.width - 150, screenSize.height - 80, 100, 30);
         nextButton.setBackground(new Color(173, 216, 230));
         nextButton.setOpaque(true);
@@ -112,17 +111,11 @@ public class StoryWindow extends JFrame {
                     clip.open(audioInput);
                     clip.start(); // Start the new music
 
-                    // Add LineListener to auto-next when audio finishes
+                    // Add a listener to detect when the audio finishes
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
-                            clip.close(); // Release the resources
-                            SwingUtilities.invokeLater(() -> {
-                                if (currentImageIndex < imagePaths.length - 1) {
-                                    nextButton.doClick(); // Simulate "Next" button click
-                                } else {
-                                    transitionToRoadMap(); // Transition if at the end
-                                }
-                            });
+                            clip.close(); // Ensure the clip is closed
+                            SwingUtilities.invokeLater(() -> navigateToNextImage());
                         }
                     });
                 } else {
@@ -134,6 +127,16 @@ public class StoryWindow extends JFrame {
         }
     }
 
+    private void navigateToNextImage() {
+        if (currentImageIndex < imagePaths.length - 1) {
+            currentImageIndex++;
+            setBackgroundImage(currentImageIndex);
+            playBackgroundMusic(currentImageIndex); // Play music for the new image
+        } else {
+            // Close the story window or navigate to the next window
+            transitionToRoadMap();
+        }
+    }
 
     // Method to stop background music
     private void stopBackgroundMusic() {
