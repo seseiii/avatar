@@ -15,6 +15,7 @@ public class GameManual extends JDialog {
     private Timer autoNextTimer;
     private JLabel backgroundLabel;
     private String[] imagePaths;
+    private boolean isUserSkipped = false; // Flag to check if user manually skipped
     int sizeWidth = 1240;
     int sizeHeight = 650;
 
@@ -71,7 +72,7 @@ public class GameManual extends JDialog {
         backgroundPanel.add(backgroundLabel);
 
         // Start Button with hover effect
-        JButton skipButton = new JButton("Skip");
+        JButton skipButton = new JButton("Next");
         skipButton.setFont(new Font("Arial", Font.BOLD, 20));
         skipButton.setFocusPainted(false);
         skipButton.setBackground(buttonColor);
@@ -79,6 +80,13 @@ public class GameManual extends JDialog {
         skipButton.setBounds(sizeWidth - 150, sizeHeight - 80, 100, 30);
         skipButton.setBorderPainted(false);
         skipButton.setOpaque(true);
+
+        // Start button action
+        skipButton.addActionListener(e -> {
+            isUserSkipped = true; // User manually skipped
+            goToNextImage();
+        });
+        backgroundPanel.add(skipButton);
 
         // Hover effect
         Color originalColor = buttonColor;
@@ -94,15 +102,6 @@ public class GameManual extends JDialog {
                 skipButton.setBackground(originalColor);
             }
         });
-
-        // Start button action
-        skipButton.addActionListener(e -> {
-            dispose();
-            if (onStartAction != null) {
-                onStartAction.run();
-            }
-        });
-        backgroundPanel.add(skipButton);
     }
 
     public void game1Manual() {
@@ -206,6 +205,16 @@ public class GameManual extends JDialog {
         });
 
         autoNextTimer.start();
+    }
+
+    private void goToNextImage() {
+        if (currentImageIndex < imagePaths.length - 1) { // Move to the next page
+            currentImageIndex++;
+            setBackgroundImage(currentImageIndex);
+        } else {
+            dispose(); // Final transition
+        }
+        isUserSkipped = false; // Reset flag para sa susunod na page
     }
 
 }
