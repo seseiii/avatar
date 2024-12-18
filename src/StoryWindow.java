@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,51 +10,46 @@ public class StoryWindow extends JFrame {
 
     private int currentImageIndex = 0; // Track the current image index
     private JLabel backgroundLabel;   // Label to display the background image
-    private String[] imagePaths = {   // Paths to the images
+    private String[] imagePaths = {
             "src/story/story1.png",
             "src/story/story2.png",
             "src/story/story3.png",
             "src/story/story4.png",
-            "src/story/missionbg.png"
-
+            "src/story/missionbg.png" // Final image
     };
 
-    private String[] soundPaths = {   // Corresponding sound files
+    private String[] soundPaths = {
             "src/wavfile/1st.wav",
             "src/wavfile/2nd.wav",
             "src/wavfile/3rd.wav",
             "src/wavfile/4th.wav"
     };
 
-    private Clip clip; // Clip to play audio
+    private Clip clip;
+    private JButton nextButton;
+    private boolean isUserSkipped = false; // Flag to check if user manually skipped
 
     public StoryWindow() {
-        setUndecorated(true); // Remove window decorations
-
-        // Set fullscreen mode
+        setUndecorated(true);
         GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
         gd.setFullScreenWindow(this);
 
-        // Set JFrame properties
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(null);
 
-        // Add background label
         backgroundLabel = new JLabel();
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         backgroundLabel.setBounds(0, 0, screenSize.width, screenSize.height);
-        setBackgroundImage(currentImageIndex); // Set the initial background image
+        setBackgroundImage(currentImageIndex);
         add(backgroundLabel);
 
-        // Add "Next" button
-        JButton nextButton = new JButton("Next");
+        nextButton = new JButton("Next");
         nextButton.setBounds(screenSize.width - 150, screenSize.height - 80, 100, 30);
         nextButton.setBackground(new Color(173, 216, 230));
         nextButton.setOpaque(true);
         nextButton.setBorderPainted(false);
 
-        // Add hover effect
         nextButton.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -66,29 +62,20 @@ public class StoryWindow extends JFrame {
             }
         });
 
-        // Add action listener to the button
         nextButton.addActionListener(e -> {
-            stopBackgroundMusic(); // Stop the current music
-            if (currentImageIndex < imagePaths.length - 1) {
-                currentImageIndex++;
-                setBackgroundImage(currentImageIndex);
-                playBackgroundMusic(currentImageIndex); // Play music for the new image
-            } else {
-                // Close the story window or navigate to the next window
-                transitionToRoadMap();
-            }
+            stopBackgroundMusic();
+            isUserSkipped = true; // User manually skipped
+            goToNextImage();
         });
 
         backgroundLabel.add(nextButton);
         setVisible(true);
-
-        // Preload and play the first background music
         playBackgroundMusic(currentImageIndex);
     }
 
     private void setBackgroundImage(int index) {
         ImageIcon icon = new ImageIcon(imagePaths[index]);
-        if (icon.getIconWidth() == -1) { // Image failed to load
+        if (icon.getIconWidth() == -1) {
             System.out.println("Image not found: " + imagePaths[index]);
         } else {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
@@ -99,23 +86,22 @@ public class StoryWindow extends JFrame {
 
     private void playBackgroundMusic(int index) {
         try {
-            // Stop and close the previous clip before playing the new one
             stopBackgroundMusic();
-
-            // Skip playing music for the last image (mission image)
-            if (index < soundPaths.length) {
+            if (index < soundPaths.length) { // Play music for pages with audio
                 File musicPath = new File(soundPaths[index]);
                 if (musicPath.exists()) {
                     AudioInputStream audioInput = AudioSystem.getAudioInputStream(musicPath);
                     clip = AudioSystem.getClip();
                     clip.open(audioInput);
-                    clip.start(); // Start the new music
+                    clip.start();
 
-                    // Add a listener to detect when the audio finishes
+                    // Auto-next kapag natapos ang music
                     clip.addLineListener(event -> {
                         if (event.getType() == LineEvent.Type.STOP) {
-                            clip.close(); // Ensure the clip is closed
-                            SwingUtilities.invokeLater(() -> navigateToNextImage());
+                            clip.close();
+                            if (!isUserSkipped) { // Auto-next lang kapag hindi nag-manual skip
+                                SwingUtilities.invokeLater(() -> goToNextImage());
+                            }
                         }
                     });
                 } else {
@@ -127,32 +113,29 @@ public class StoryWindow extends JFrame {
         }
     }
 
-    private void navigateToNextImage() {
-        if (currentImageIndex < imagePaths.length - 1) {
-            currentImageIndex++;
-            setBackgroundImage(currentImageIndex);
-            playBackgroundMusic(currentImageIndex); // Play music for the new image
-        } else {
-            // Close the story window or navigate to the next window
-            transitionToRoadMap();
-        }
-    }
-
-    // Method to stop background music
     private void stopBackgroundMusic() {
         if (clip != null && clip.isRunning()) {
             clip.stop();
-            clip.close(); // Release the resources
+            clip.close();
         }
     }
 
-    // Transition to RoadMapWindow
-    private void transitionToRoadMap() {
-        stopBackgroundMusic(); // Ensure music stops before transition
+    private void goToNextImage() {
+        if (currentImageIndex < imagePaths.length - 1) { // Move to the next page
+            currentImageIndex++;
+            setBackgroundImage(currentImageIndex);
+            playBackgroundMusic(currentImageIndex);
+        } else {
+            transitionToRoadMap(); // Final transition
+        }
+        isUserSkipped = false; // Reset flag para sa susunod na page
+    }
 
+    private void transitionToRoadMap() {
+        stopBackgroundMusic();
         SwingUtilities.invokeLater(() -> {
-            new RoadMapWindow().setVisible(true); // Launch RoadMapWindow
-            dispose(); // Dispose of the StoryWindow
+            new RoadMapWindow().setVisible(true);
+            dispose();
         });
     }
 }

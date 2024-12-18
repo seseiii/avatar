@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -19,7 +20,7 @@ class StartScreen extends JDialog {
         getRootPane().setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
 
         // Dialog setup
-        setSize(705, 591);
+        setSize(400, 380);
         setLocationRelativeTo(parent);
         setResizable(false);
         setLayout(null);
@@ -44,7 +45,7 @@ class StartScreen extends JDialog {
 
                 // Draw the image
                 if (backgroundImage != null) {
-                    Image scaledImage = backgroundImage.getScaledInstance(680, 520, Image.SCALE_SMOOTH);
+                    Image scaledImage = backgroundImage.getScaledInstance(380, 310, Image.SCALE_SMOOTH);
                     g2.drawImage(scaledImage, 10, 10, null);
                 } else {
                     g2.setColor(Color.RED);
@@ -52,18 +53,18 @@ class StartScreen extends JDialog {
                 }
             }
         };
-        backgroundPanel.setBounds(0, 0, 725, 661);
+        backgroundPanel.setBounds(0, 0, 400, 380);
         backgroundPanel.setLayout(null);
         backgroundPanel.setOpaque(false);
         add(backgroundPanel);
 
         // Start Button with hover effect
         JButton startButton = new JButton("Start");
-        startButton.setFont(new Font("Arial", Font.BOLD, 20));
+        startButton.setFont(new Font("Arial", Font.BOLD, 14));
         startButton.setFocusPainted(false);
         startButton.setBackground(buttonColor);
         startButton.setForeground(Color.WHITE);
-        startButton.setBounds(250, 540, 200, 40);
+        startButton.setBounds((400 - 100) / 2, 330, 100, 40);
         startButton.setBorderPainted(false);
         startButton.setOpaque(true);
 

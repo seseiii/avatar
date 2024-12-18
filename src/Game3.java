@@ -346,7 +346,7 @@ public class Game3 extends JPanel implements ActionListener, KeyListener {
             }
             return false;
         });
-        if (foods.isEmpty() && !gameOver) {
+        if (score == 50 && !gameOver) {
             gameOver = true;
 
 

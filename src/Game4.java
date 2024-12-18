@@ -130,6 +130,7 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
                     }
             ).setVisible(true);
 
+
             tempFrame.dispose(); // Dispose of the temporary frame after StartScreen closes
 
             playbutton();
@@ -405,11 +406,20 @@ public class Game4 extends JPanel implements ActionListener, KeyListener {
                 // Hide current game panel
                 this.setVisible(false);
 
+                roadMapWindow.dispose();
+
+
                 // Dispose the parent window
                 Window parentWindow = (Window) SwingUtilities.getWindowAncestor(Game4.this);
                 if (parentWindow != null) {
                     parentWindow.dispose();
                 }
+
+                String username = LoginWindow.getLoggedInUsername();  // Get the logged-in username
+                AccountManager.updatePlayerStatus(username);  // Update status
+
+                new LastWindow();
+
             });
         }
     }

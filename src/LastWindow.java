@@ -1,3 +1,4 @@
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -9,8 +10,6 @@ public class LastWindow extends JFrame {
 
     public LastWindow() {
 
-        String username = LoginWindow.getLoggedInUsername();  // Get the logged-in username
-        AccountManager.updatePlayerStatus(username);  // Update status
 
         // Load the background image
         ImageIcon icon = new ImageIcon("src/img/end.png");
@@ -107,8 +106,6 @@ public class LastWindow extends JFrame {
         });
 
         setVisible(true);
-
-
 
     }
 }
